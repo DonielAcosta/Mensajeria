@@ -1,5 +1,7 @@
 <?php
+
 defined('BASEPATH') OR exit('No direct script access allowed');
+use Twilio\Rest\Client;
 
 class Welcome extends CI_Controller {
 
@@ -9,9 +11,28 @@ class Welcome extends CI_Controller {
 		$this->load->view('welcome_message');
 	}
 
+  public function sendSMS($data) {
+          // Your Account SID and Auth Token from twilio.com/console
+            $sid = 'your_sid';
+            $token = 'your_token';
+	    $client = new Client($sid, $token);
+			
+            // Use the client to do fun stuff like send text messages!
+             return $client->messages->create(
+                // the number you'd like to send the message to
+                $data['phone'],
+                array(
+                    // A Twilio phone number you purchased at twilio.com/console
+                    "from" => "+your Twilio number",
+                    // the body of the text message you'd like to send
+                    'body' => $data['text']
+                )
+            );
+    }
+}
+
 //   <?php
 // defined('BASEPATH') OR exit('No direct script access allowed');
-// use Twilio\Rest\Client;
 
 // class Welcome extends CI_Controller {
 
