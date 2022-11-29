@@ -1,64 +1,71 @@
 <?php
 
 defined('BASEPATH') OR exit('No direct script access allowed');
+// require __DIR__ . '/vendor/autoload.php';
 use Twilio\Rest\Client;
+
 
 class Welcome extends CI_Controller {
 
+	public function index(){
+   
+		// $this->load->view('welcome_message');
 
-	public function index()
-	{
-		$this->load->view('welcome_message');
+    $sid = 'ACbb39d3c009896c990791cca070073524';
+    $token = 'a349af80027a4935985ceea4f740f349';
+
+    $number = "+14256007380";
+
+    $client = new Client($sid, $token);
+    $client->messages->create(
+        '+584120749550',
+        array(
+            'from' => $number,
+            'body' => 'probando drocerca!'
+        )
+    );
 	}
 
-  public function sendSMS($data) {
-          // Your Account SID and Auth Token from twilio.com/console
-            $sid = 'your_sid';
-            $token = 'your_token';
-	    $client = new Client($sid, $token);
-			
-            // Use the client to do fun stuff like send text messages!
-             return $client->messages->create(
-                // the number you'd like to send the message to
-                $data['phone'],
-                array(
-                    // A Twilio phone number you purchased at twilio.com/console
-                    "from" => "+your Twilio number",
-                    // the body of the text message you'd like to send
-                    'body' => $data['text']
-                )
-            );
-    }
+  /**
+   * It sends an SMS message to the number specified in the  variable.
+   */
+  public function sendSMS() {
+
+    $cliente = $_POST['cliente'];   //option de prueba 
+    $id_templade = $_POST['id'];    //option de prueba
+    
+    $this->load->model('mensajeria_model');
+    $sms = $this->mensajeria_model->datacli($cliente);
+    $templade = $this->mensajeria_model->templade($id_templade);
+
+    //validaciones
+    $cli =  $sms[0]->cliente;  // cliente en base de datos
+    $numberCLI = $sms[0]->telefon2;   //numero del cliente a enviar mensaje 
+    $numberCLI =str_replace(' ', '', $numberCLI); // para que no tenga espacios en blanco
+    $numberCLI = preg_replace('/-/', '', $numberCLI); // para que no tenga -
+    $numberCLI = substr($numberCLI, 1); // empiece desde primera posicion ejemplo 4120749550
+    $templade = $templade[0]->templade;
+
+
+    /* Mensajeria sms */
+    //para pruebas 
+    // $numberCLI = $_POST['numero']; 
+    // $templade = $_POST['mensaje'];
+
+    $sid = 'ACbb39d3c009896c990791cca070073524';
+    $token = 'a349af80027a4935985ceea4f740f349';
+
+    $number = "+14256007380";
+
+    $client = new Client($sid, $token);
+    $client->messages->create(
+      '+58'.$numberCLI,
+        array(
+            'from' =>$number,
+            'body' => $templade
+        )
+    );
+    print('enviando con exito '); // mensaje para visualizar en posman terminal o web pruebas 
+  }
 }
 
-//   <?php
-// defined('BASEPATH') OR exit('No direct script access allowed');
-
-// class Welcome extends CI_Controller {
-
-// 	public function index()
-// 	{
-// 		$data = ['phone' => '+919703132428', 'text' => 'Hello, CI'];
-// 		print_r($this->sendSMS($data));
-// 	}
-
-// 	protected function sendSMS($data) {
-//           // Your Account SID and Auth Token from twilio.com/console
-//             $sid = 'your_sid';
-//             $token = 'your_token';
-// 	    $client = new Client($sid, $token);
-			
-//             // Use the client to do fun stuff like send text messages!
-//              return $client->messages->create(
-//                 // the number you'd like to send the message to
-//                 $data['phone'],
-//                 array(
-//                     // A Twilio phone number you purchased at twilio.com/console
-//                     "from" => "+your Twilio number",
-//                     // the body of the text message you'd like to send
-//                     'body' => $data['text']
-//                 )
-//             );
-//     }
-// }
-}
